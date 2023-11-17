@@ -6,7 +6,7 @@
 @Author     : Gr%1m
 @Date       : 11/11/2023 1:02 pm
 """
-DEBUG = True
+DEBUG = False
 
 TITLE = "AWD-Frame-ByGr%1m"
 AUTHOR = "Gr%1m"
