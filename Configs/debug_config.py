@@ -28,7 +28,7 @@ DFTime = 1800  # Defensive time
 
 # About MY Server Info
 MyHostSSH = f'ssh://msfadmin:msfadmin@{MyHost}:22/xx'
-MyHostSQL = f'mysql://cms:qwerty;@{MyHost}:3306/xx'
+MyHostSQL = f'mysql://cms:qwerty@{MyHost}:3306/cms'
 
 # MyHost.split(':')
 # [0] protocol [1] //username [2]password@MyhostIP [3]port/xx

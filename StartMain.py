@@ -284,7 +284,7 @@ class AwdConsole(Cmd):
         get_backup(MyHostSSH, '/var/www/twiki/pub')
 
     def do_mysql(self, argv=''):
-        conn = connect_sql(MyHostSQL)
+        conn = connect_mysql(MyHostSQL)
         if conn is None:
             printX('[-] Failed to Connect My SQL')
             return 0
@@ -292,10 +292,11 @@ class AwdConsole(Cmd):
         while sqlcmd != 'exit':
             try:
                 sqlcmd = input("mysql>")
-                if sqlcmd[-1] != ';' or ';' not in sqlcmd:
-                    printX("[!] Now in SQL cmd, must end with ';' ")
                 if sqlcmd == 'help':
-                    pass
+                    print(f"\x1b[92m{SQL_HELP} \x1b[0m")
+                    continue
+                elif sqlcmd[-1] != ';' or ';' not in sqlcmd:
+                    printX("[!] Now in SQL cmd, must end with ';' ")
                 result = exe_sql(conn, sqlcmd)
                 print(result)
             except (KeyboardInterrupt, EOFError):

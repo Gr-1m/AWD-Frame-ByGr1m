@@ -73,16 +73,17 @@ def get_backup(myhostssh, webroot='/var/www/twiki/pub'):
 
 
 def connect_mysql(myhostsql):
-    # todo: mysql connect
     try:
-        conn = pymysql.connect(
-            host=myhostsql.split('@')[1].split(':')[0],
-            port=int(myhostsql.split(':')[-1].split('/')[0]),
-            user=myhostsql.split(':')[1][2:],
-            password=myhostsql.split(':')[2].split('@')[0],
-            database='dvwa',
-            charset='utf8'  # 字符集，注意不是'utf-8'
-        )
+        server = {'host': myhostsql.split('@')[1].split(':')[0],
+                  'port': int(myhostsql.split(':')[-1].split('/')[0]),
+                  'user': myhostsql.split(':')[1][2:],
+                  'password': myhostsql.split(':')[2].split('@')[0],
+                  'charset': 'utf8',  # 字符集，注意不是'utf-8'
+                  }
+        print(f"\x1b[01;32m[+]\x1b[0m Wait For, connecting to {server['user']}@{server['host']}")
+        print(f"[T] Use the\x1b[01;32m 'help'\x1b[0m to view Tips!")
+        conn = pymysql.connect(**server)
+
     except pymysql.OperationalError as e:
         print(f"[-] {e.__class__.__name__} {e}")
     else:
@@ -95,8 +96,6 @@ def exe_sql(conn, sqlcmd):
     try:
         cursor.execute(sqlcmd)
         stdout = cursor.fetchall()
-        # cursor.execute('show global variables like "%general\_log%";')
-        # cursor.execute('show global variables like "secure%";')
         # 提交事务 关闭游标
     except Exception as e:
         conn.rollback()
@@ -104,4 +103,3 @@ def exe_sql(conn, sqlcmd):
         conn.commit()
         cursor.close()
         return stdout
-

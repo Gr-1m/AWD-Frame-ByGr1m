@@ -60,7 +60,17 @@ CMD_HELP = """
             | shellin          | 植入后门
             |------------------|---------------------------------------------------------------|
             """
-
+SQL_HELP = """
+            |--------------------------------------------------------------|-------------------|
+            |                       SQL Command                            |  Description      |
+            |--------------------------------------------------------------|-------------------|
+            | show global variables like "general%";                       | 查看日志记录配置信息
+            | show global variables like "secure%";                        | 查看系统调用信息
+            | create user 'username'@'localhost' identified by 'password'; | 创建用户
+            | set password for username=password('1234');                  | 修改密码
+            | flush privileges;                                            | 刷新权限
+            |------------------|-------------------------------------------|-------------------|
+"""
 NOT_SHOW = ['Cmd', 'AwdConsole']
 INIT_CHECK = ['']
 SHOW_CONFIG = ['all', 'gi', 'gti', 'msi', 'fi', 'alive']
