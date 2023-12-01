@@ -9,7 +9,7 @@
 
 # About Game Info
 TeamReplaceStr = 'XXXTrs'
-MyHost = "192.168.122.231"
+MyHost = "192.168.122.1"
 EyHosts = f"192.168.122.{TeamReplaceStr}"
 Token = "test_token1"
 

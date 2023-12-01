@@ -40,7 +40,7 @@ def printYellow(mess, show=True):
     return bcolor.WARNING + mess + bcolor.ENDC
 
 
-def printX(context, *args, **kwargs) -> None:
+def printX(context=None, *args, **kwargs) -> None:
     logtime = True
     try:
         if context[0] == '[' and context[2] == ']':
@@ -65,8 +65,10 @@ def printX(context, *args, **kwargs) -> None:
             else:
                 logtime = False
                 context = '\x1b[01;30;37m[!]\x1b[0m ' + main_text
-        else:
+        elif context:
             context = '\x1b[01;30;38m[?]\x1b[0m ' + context.lstrip()
+        else:
+            pass
     except IndexError:
         context = '\x1b[01;30;37m[E]\x1b[0m ' + f"Log Input Error:{context.lstrip()}"
 

@@ -6,7 +6,7 @@
 @Author     : Gr%1m
 @Date       : 14/11/2023 10:56 am
 """
-import requests, pymysql
+import requests, pymysql, paramiko
 import hashlib
 import re
 
@@ -33,6 +33,24 @@ X = 'x'
 
 def up_payloads(data):
     Payloads.append(data)
+
+
+def submit_flag(submitAPI, token, flag):
+    try:
+        if submitAPI[-1] == 'GET':
+            url = f'{submitAPI[0]}?{submitAPI[1]}={token}&{submitAPI[2]}={flag}'
+            res = requests.get(url=url)
+        elif submitAPI[-1] == 'POST':
+            res = requests.post(url=submitAPI[0], data={submitAPI[1]: token, submitAPI[2]: flag})
+        else:
+            print("please set SubmitAPI method")
+            return "No", 400
+        return res.text, res.status_code
+    except KeyboardInterrupt:
+        print('Interrupt Submit Flag')
+        return 0, 0
+    except Exception:
+        return 0, 0
 
 
 def get_flag(ey_hosts, rce='cat /flag'):
@@ -70,8 +88,26 @@ def backdoor_in():
     pass
 
 
-def connect_ssh():
-    pass
+def connect_ssh(myhostssh):
+    client = paramiko.SSHClient()
+    client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+
+    try:
+        client.connect(hostname=myhostssh.split('@')[1].split(':')[0],
+                       port=int(myhostssh.split(':')[-1].split('/')[0]),
+                       username=myhostssh.split(':')[1][2:],
+                       password=myhostssh.split(':')[2].split('@')[0])
+        print(f"[+] connect Host {myhostssh.split('@')[1].split(':')[0]}")
+
+        _, stdout, stderr = client.exec_command('pwd')
+
+    except paramiko.ssh_exception.NoValidConnectionsError as e:
+        print(f'[-] SSH Error: {e}')
+    except FileNotFoundError as e:
+        print(f'[-] FileNotFoundError: {e}, {stderr.read().decode()}')
+    finally:
+        client.close()
+        return 0
 
 
 def connect_sql(eyhostsql):

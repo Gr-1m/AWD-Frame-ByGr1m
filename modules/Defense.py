@@ -36,7 +36,7 @@ def check_me(my_host, alive_str):
         return '\x1b[01;31mDown\x1b[0m'
 
 
-def get_backup(myhostssh, webroot='/var/www/twiki/pub'):
+def get_backup(myhostssh, webroot):
     # 设置目标机器的SSH连接信息
 
     # 创建SSH客户端 自动添加服务器的SSH密钥（这将绕过密钥验证，仅在信任网络中使用）

@@ -11,20 +11,20 @@ from time import time, localtime, strftime
 import requests
 
 ScanTime = ''
-
+alive_first = lambda x: printX('[!] Please scan alive/ping first') if type(x) == str else print()
 
 # About Game Info
-def scan_alive(ey_hosts, my_host: str, replace_str: str):
+def scan_alive(ey_hosts, my_host: str, replace_str: str, port: int):
     results = []
     ScanTime = strftime("%Y-%m-%d %H:%M:%S", localtime(time()))
     if type(ey_hosts) == str:
         for i in range(1, 255):
-            url = f"http://{ey_hosts.replace(replace_str, str(i))}"
+            url = f"http://{ey_hosts.replace(replace_str, str(i))}:{port}/"
             print(f'\r\x1b[01;30;34m[+]\t\t\t {round(i * 100 / 255)}% [', '>' * round(i * 100 / 255), end='')
             try:
                 res = requests.get(url, timeout=(0.01, 1))
                 print(f'\r\x1b[01;30;34m[+] "{url}", # {res.status_code}', ' ' * 100)
-                results.append(f'{ey_hosts.replace(replace_str, str(i))}')
+                results.append(f'{url[7:-1]}')
             except KeyboardInterrupt:
                 printX("[-] Quit Scan Alive")
                 return dict.fromkeys(results, 'Alive')
@@ -52,5 +52,9 @@ def scan_alive(ey_hosts, my_host: str, replace_str: str):
         return ey_hosts
 
 
+def scan_ssh(ey_hosts):
+    alive_first(ey_hosts)
+
+
 def scan_vul(ey_hosts):
-    pass
+    alive_first(ey_hosts)

@@ -9,27 +9,25 @@
 from Configs.frame_config import *
 from cmd import Cmd
 from func.CmdColors import printX
-from modules.TimeRemind import *
-from modules.Submit import *
+from modules.Auxiliary import *
 from modules.Scan import *
 from modules.Attack import *
 from modules.Defense import *
 import os, sys, time
 
 try:
-    Mode = sys.argv[1]
-    del sys.argv
+    Mode = sys.argv[1].upper()
 except IndexError:
     Mode = 'X'
 
 if DEBUG:
-    Mode = 'Debug'
+    Mode = 'DEBUG'
     from Configs.debug_config import *
-elif Mode == 'Bugku':
+elif Mode == 'BUGKU':
     from Configs.bugku_config import *
-elif Mode == 'Normal':
+elif Mode == 'NORMAL':
     from Configs.edit_config import *
-elif Mode == 'Debug':
+elif Mode == 'DEBUG':
     from Configs.debug_config import *
 else:
     printX('[-] No This Mode (Normal|Debug|Bugku)\n')
@@ -78,7 +76,7 @@ class AwdConsole(Cmd):
         """)
 
     def do_init(self, argv):
-        from importlib import reload
+        # from importlib import reload
         # todo: Warning
         args = argv.split()
         printX(f'[!] run init will flush all Global Config (Default in FileConfig)')
@@ -201,7 +199,13 @@ class AwdConsole(Cmd):
             return 0
         args = argv.split()[:1]
         if args[0] == 'alive':
-            globals()['EyHosts'] = scan_alive(EyHosts, MyHost, TeamReplaceStr)
+            try:
+                port = args[1]
+            except IndexError:
+                port = 80
+            globals()['EyHosts'] = scan_alive(EyHosts, MyHost, TeamReplaceStr, port)
+        elif args[0] == 'ping':
+            pass
         elif args[0] == 'ssh':
             pass
         elif args[0] == 'sql':
@@ -281,7 +285,11 @@ class AwdConsole(Cmd):
             os.system('clear')
 
     def do_getbackup(self, argv=''):
-        get_backup(MyHostSSH, '/var/www/twiki/pub')
+        save_path = argv.split()[0]
+        if os.path.isdir(save_path):
+            get_backup(MyHostSSH, save_path)
+        else:
+            printX(f'[-] no such directory: {save_path}')
 
     def do_mysql(self, argv=''):
         conn = connect_mysql(MyHostSQL)
@@ -307,6 +315,9 @@ class AwdConsole(Cmd):
 
         conn.close()
 
+    def do_restart(self, argv=''):
+        os.execv(sys.executable, ['python'] + sys.argv)
+
     # todo : Test
     def do_test(self, argv=''):
         pass
@@ -320,6 +331,10 @@ class AwdConsole(Cmd):
         # for k in globals().keys():
         #     if '__' not in k and k[0].isupper() and not k.isupper() and k not in NOT_SHOW:
         #         print(f"'{k}',", end='')
+
+    def do_exit(self, argv=''):
+        # todo : write in file
+        exit(0)
 
 
 if __name__ == '__main__':
@@ -337,4 +352,4 @@ if __name__ == '__main__':
         exit(0)
     except Exception as e:
         printX(f"[-] {e.__class__.__name__} {e}")
-        # exit(1)
+        exit(1)

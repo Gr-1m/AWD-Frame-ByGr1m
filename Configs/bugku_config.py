@@ -8,17 +8,17 @@
 """
 # About Game Info
 TeamReplaceStr = 'XXXTrs'
-MyHost = "192-168-1-187.pvp3487.bugku.cn"
-EyHosts = f"192-168-1-{TeamReplaceStr}.pvp3487.bugku.cn"
+MyHost = "192-168-1-229.pvp3589.bugku.cn"
+EyHosts = f"192-168-1-{TeamReplaceStr}.pvp{MyHost.split('pvp')[-1].split('.')[0]}.bugku.cn"
 Token = "e430ec6d4fe99be8e70a9e63a0a8af45"
 
 APIMethod = 'GET'
 SubmitAPI = [f"https://ctf.bugku.com/pvp/submit.html", 'token', 'flag', APIMethod]
 
 # About Game Time Info
-GSTime = "2023-11-14 20:30:00"  # Game Start Time
-RTime = 300  # Round Time
-RCount = 15  # Round Count
+GSTime = "2023-12-03 19:00:00"  # Game Start Time
+RTime = 600  # Round Time
+RCount = 20  # Round Count
 DFTime = 1800  # Defensive time
 
 # About MY Server Info
@@ -35,7 +35,7 @@ Vulner = {
 # About Flag
 FlagPath = '/flag'
 FlagFormat = 'flag{xxxx_xxxx_xxxx}'
-FlagRegular = r'^flag{\w{32}}$'
+FlagRegular = r'flag{\w{32}}'
 BUGKU_FLAG_LEN = 32
 FlagLen = BUGKU_FLAG_LEN
 
