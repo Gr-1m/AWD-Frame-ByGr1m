@@ -21,13 +21,13 @@ API_method = 'GET'
 SubmitAPI = [API_URL, API_token, API_flag, API_method]
 
 # About Game Time Info
-GSTime = "2023-11-13 20:00:00"  # Game Start Time
-RTime = 300  # Round Time
+GSTime = "2023-12-03 19:00:00"  # Game Start Time
+RTime = 600  # Round Time
 RCount = 20  # Round Count
 DFTime = 1800  # Defensive time
 
 # About MY Server Info
-MyHostSSH = f'ssh://msfadmin:msfadmin@{MyHost}:22/xx'
+MyHostSSH = f'ssh://msfadmin:msfadmin@{MyHost}:22/var/www/html'
 MyHostSQL = f'mysql://cms:qwerty@{MyHost}:3306/cms'
 
 # MyHost.split(':')

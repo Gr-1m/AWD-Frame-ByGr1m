@@ -6,13 +6,14 @@
 @Author     : Gr%1m
 @Date       : 10/11/2023 4:33 pm
 """
-from Configs.frame_config import *
 from cmd import Cmd
+from Configs.frame_config import *
 from func.CmdColors import printX
 from modules.Auxiliary import *
 from modules.Scan import *
 from modules.Attack import *
 from modules.Defense import *
+
 import os, sys, time
 
 try:
@@ -23,6 +24,7 @@ except IndexError:
 if DEBUG:
     Mode = 'DEBUG'
     from Configs.debug_config import *
+# elif os.path.isfile(''):  todo : `read cache`
 elif Mode == 'BUGKU':
     from Configs.bugku_config import *
 elif Mode == 'NORMAL':
@@ -49,13 +51,14 @@ class AwdConsole(Cmd):
         print(f'\x1b[93m{self.Welcome} \x1b[0m')
         print(f'\x1b[92m{self.commandHelp} \x1b[0m')
 
-    def precmd(self, line):
-        """Hook method executed just before the command line is
-        interpreted, but after the input prompt is generated and issued.
-
-        """
-        # todo: time flush
-        return line
+    # def precmd(self, line):
+    #     # print(line)
+    #     """Hook method executed just before the command line is
+    #     interpreted, but after the input prompt is generated and issued.
+    #
+    #     """
+    #     # todo: time flush
+    #     return line
 
     def help_show(self):
         printX(f"[i] show [all | gi | gti | msi | fi | myalive | eyalive]")
@@ -157,9 +160,11 @@ class AwdConsole(Cmd):
         args = argv.split('=')[0].split()
         args.append(argv.split('=')[-1])
         keys = globals().keys()
-        if len(args) < 3 or args[0] not in ['global', 'g', 'add' 'a']:
-            printX(f"[i] -g global, -a add, set -g xxx=xxx, set add Flags flagxx")
-        elif args[1] not in keys:
+
+        if len(args) < 3 or args[0] not in ['global', '-g', 'add' '-a', 'g', 'a']:
+            printX(f"[i] -g global, -a add, set -g xxx=xxx, set add Flags flagxx, (-,=)均可省略")
+            return 0
+        elif args[0] not in ['add', '-a', 'a'] and args[1] not in keys:
             printX(f"[!] Need at least two param Or Not Find {args[1]}")
             printX(f"[i] you can set the following options\n")
             print([_ for _ in keys if allow_show(_)])
@@ -169,7 +174,9 @@ class AwdConsole(Cmd):
         if allow_show(args[1]):
             globals()[args[1]] = args[2]
             if args[1] == 'Mode':
-                printX(f'[!] Change Mode should do `init`')
+                printX(f'[!] Change Mode should do `restart`')
+                sys.argv[1] = args[2]
+            return 0
         else:
             printX("[-] Not allow change, Read-Only Variable")
 
@@ -257,7 +264,11 @@ class AwdConsole(Cmd):
         except Exception as e:
             printX(f"[-] Error {e}")
         else:
-            print(Flags)
+            for flag in Flags:
+                print(flag)
+
+    def do_shellin(self, argv=''):
+        backdoor_in(EyHosts)
 
     def do_check(self, argv=''):
         args = argv.split()
@@ -285,6 +296,9 @@ class AwdConsole(Cmd):
             os.system('clear')
 
     def do_getbackup(self, argv=''):
+        if not argv or argv == '':
+            printX('[-] no path to save backup')
+            return 0
         save_path = argv.split()[0]
         if os.path.isdir(save_path):
             get_backup(MyHostSSH, save_path)
@@ -296,13 +310,23 @@ class AwdConsole(Cmd):
         if conn is None:
             printX('[-] Failed to Connect My SQL')
             return 0
-        sqlcmd = ''
-        while sqlcmd != 'exit':
+        sqlhelpcmd = [
+            'show global variables like "general%";',
+            'show global variables like "secure%";',
+            "create user 'username'@'localhost' identified by 'password';",
+            "set password for username=password('1234');",
+            'flush privileges;',
+        ]
+        sqlcmd = '__'
+        while sqlcmd not in 'exit_quit':
             try:
-                sqlcmd = input("mysql>")
-                if sqlcmd == 'help':
-                    print(f"\x1b[92m{SQL_HELP} \x1b[0m")
-                    continue
+                sqlcmd = input("mysql>").strip()
+                if sqlcmd[0:4] == 'help':
+                    if sqlcmd[-1].isdigit() and 0 < int(sqlcmd[-1]) < 5:
+                        sqlcmd = sqlhelpcmd[int(sqlcmd[-1])]
+                    else:
+                        print(f"\x1b[92m{SQL_HELP} \x1b[0m")
+                        continue
                 elif sqlcmd[-1] != ';' or ';' not in sqlcmd:
                     printX("[!] Now in SQL cmd, must end with ';' ")
                 result = exe_sql(conn, sqlcmd)
@@ -320,8 +344,8 @@ class AwdConsole(Cmd):
 
     # todo : Test
     def do_test(self, argv=''):
-        pass
-        # todo:
+        backdoor_in(EyHosts)
+        # todo: 1 AddCheckAliveStr
         # from importlib import reload
         # reload(sys.modules['modules.Attack'])
         # print(sys.modules['Configs.debug_config'])
@@ -332,8 +356,12 @@ class AwdConsole(Cmd):
         #     if '__' not in k and k[0].isupper() and not k.isupper() and k not in NOT_SHOW:
         #         print(f"'{k}',", end='')
 
+    def do_save(self, argv=None):
+        pass
+
     def do_exit(self, argv=''):
         # todo : write in file
+        self.do_save()
         exit(0)
 
 

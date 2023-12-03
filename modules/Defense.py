@@ -6,6 +6,7 @@
 @Author     : Gr%1m
 @Date       : 14/11/2023 11:00 am
 """
+from urllib.parse import urlparse as URL
 import requests
 import paramiko
 import pymysql
@@ -17,6 +18,7 @@ Vulner = {
     'Pwn0': [4444, '', '/home/ctf/pwn'],
     'Test': [80, 'test', 'home/usetest/filestp/testfile']
 }
+AliveStr = 'flag{bbcce4088-e7525797-BY_Gr%1m-c716e82}'
 
 
 # Reinforcement stage
@@ -37,27 +39,17 @@ def check_me(my_host, alive_str):
 
 
 def get_backup(myhostssh, webroot):
-    # 设置目标机器的SSH连接信息
-
-    # 创建SSH客户端 自动添加服务器的SSH密钥（这将绕过密钥验证，仅在信任网络中使用）
-    client = paramiko.SSHClient()
-    client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-
-    # 连接到目标机器
-    # MyHostSSH = f'ssh://msfadmin:msfadmin@192.168.122.231:22/x'
-    # myhostssh = MyHostSSH
     backup_filename = 'www.tar'
+
     try:
-        client.connect(hostname=myhostssh.split('@')[1].split(':')[0],
-                       port=int(myhostssh.split(':')[-1].split('/')[0]),
-                       username=myhostssh.split(':')[1][2:],
-                       password=myhostssh.split(':')[2].split('@')[0])
-        print(f"[+] connect Host {myhostssh.split('@')[1].split(':')[0]}")
+        client = connect_ssh(myhostssh)
+        print(f"[+] connect Host {myhostssh.hostname}")
 
         _, stdout, stderr = client.exec_command('pwd')
         pwd = stdout.read().decode().strip()
+        _, stdout, stderr = client.exec_command(f"echo '<!--{AliveStr}-->'; >> {webroot}/index.php")
         _, stdout, stderr = client.exec_command(f'tar -zcvf {backup_filename} {webroot}')
-        print(f"[+] tar WebRoot directory {backup_filename} success, sftp get {backup_filename}")
+        print(f"[+] tar WebRoot directory {webroot} success, sftp get {backup_filename}")
 
         sftp = client.open_sftp()
         sftp.get(f"{pwd}/{backup_filename}", "data/www.tar")
@@ -66,18 +58,41 @@ def get_backup(myhostssh, webroot):
         print(f'[-] SSH Error: {e}')
     except FileNotFoundError as e:
         print(f'[-] FileNotFoundError: {e}, {stderr.read().decode()}')
-    finally:
+    else:
         print(f"[+] download finished -> ./data/{backup_filename}")
+    finally:
         client.close()
         return 0
 
 
-def connect_mysql(myhostsql):
+def connect_ssh(myhostssh):
+    # 设置目标机器的SSH连接信息
+
+    # 创建SSH客户端 自动添加服务器的SSH密钥（这将绕过密钥验证，仅在信任网络中使用）
+    client = paramiko.SSHClient()
+    client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+
+    # 连接到目标机器
+    myhostssh = URL(myhostssh)
     try:
-        server = {'host': myhostsql.split('@')[1].split(':')[0],
-                  'port': int(myhostsql.split(':')[-1].split('/')[0]),
-                  'user': myhostsql.split(':')[1][2:],
-                  'password': myhostsql.split(':')[2].split('@')[0],
+        client.connect(hostname=myhostssh.hostname,
+                       username=myhostssh.username,
+                       password=myhostssh.password,
+                       port=myhostssh.port, )
+
+    except paramiko.ssh_exception.NoValidConnectionsError as e:
+        print(f'[-] SSH Error: {e}')
+    else:
+        return client
+
+
+def connect_mysql(myhostsql):
+    myhostsql = URL(myhostsql)
+    try:
+        server = {'host': myhostsql.hostname,
+                  'port': myhostsql.port,
+                  'user': myhostsql.username,
+                  'password': myhostsql.password,
                   'charset': 'utf8',  # 字符集，注意不是'utf-8'
                   }
         print(f"\x1b[01;32m[+]\x1b[0m Wait For, connecting to {server['user']}@{server['host']}")
@@ -98,6 +113,7 @@ def exe_sql(conn, sqlcmd):
         stdout = cursor.fetchall()
         # 提交事务 关闭游标
     except Exception as e:
+        print(f"[-] {e.__class__.__name__} {e}")
         conn.rollback()
     else:
         conn.commit()

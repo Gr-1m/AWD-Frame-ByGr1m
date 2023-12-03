@@ -6,6 +6,8 @@
 @Author     : Gr%1m
 @Date       : 11/11/2023 1:02 pm
 """
+import os
+
 DEBUG = False
 
 TITLE = "AWD-Frame-ByGr%1m"
@@ -28,6 +30,12 @@ WELCOME = f"""
     2.
 
        """
+URL_HELP = """
+    本脚本中的一切 URL,都遵循格式：scheme://username:password@hostname:port/path?query1=xxx&query2=xxx
+    例如1 : SubmitAPI = "https://ctf.bugku.com/pvp/submit.html?token=xxx&flag=xxx"
+    例如2 : ssh_url = "ssh://team1:abc123@192.168.1.1:2222/"
+    例如3 : payload = "POST://bugku.com:80/game/index.php?a=phpinfo();" "php://xxxx.org:8081/config/xx.php?s=s"
+    """
 CMD_HELP = """
     Command Tips
     =============
@@ -61,15 +69,15 @@ CMD_HELP = """
             |------------------|---------------------------------------------------------------|
             """
 SQL_HELP = """
-            |--------------------------------------------------------------|-------------------|
-            |                       SQL Command                            |  Description      |
-            |--------------------------------------------------------------|-------------------|
-            | show global variables like "general%";                       | 查看日志记录配置信息
-            | show global variables like "secure%";                        | 查看系统调用信息
-            | create user 'username'@'localhost' identified by 'password'; | 创建用户
-            | set password for username=password('1234');                  | 修改密码
-            | flush privileges;                                            | 刷新权限
-            |------------------|-------------------------------------------|-------------------|
+            |-------------------------------------------------------------------|-------------------|
+            |                       SQL Command                                 |  Description      |
+            |-------------------------------------------------------------------|-------------------|
+            | 1: show global variables like "general%";                         | 查看日志记录配置信息
+            | 2: show global variables like "secure%";                          | 查看系统调用信息
+            | 3: create user 'username'@'localhost' identified by 'password';   | 创建用户
+            | 4: set password for username=password('1234');                    | 修改密码
+            | 5: flush privileges;                                              | 刷新权限
+            |------------------|------------------------------------------------|-------------------|
 """
 NOT_SHOW = ['Cmd', 'AwdConsole']
 INIT_CHECK = ['']
@@ -78,6 +86,11 @@ GLOBAL_CONFIG = ['TeamReplaceStr', 'MyHost', 'EyHosts', 'Token', 'APIMethod', 'S
                  'DFTime', 'MyHostSSH', 'MyHostSQL', 'Vulner', 'FlagPath', 'FlagFormat', 'FlagRegular', 'FlagLen',
                  'AliveStr', 'AliveTime', 'AppendStr', ]
 
+FRAME_DIR = os.path.dirname(os.path.dirname(__file__))
+
 
 def allow_show(key):
-    return '__' not in key and key[0].isupper() and not key.isupper() and key not in NOT_SHOW
+    format_bool = key[0].isupper() and not key.isupper()
+    ignore_bool = '__' not in key and 'Replace' not in key
+    return format_bool and ignore_bool and key not in NOT_SHOW
+    # return '__' not in key and key[0].isupper() and not key.isupper() and key not in NOT_SHOW

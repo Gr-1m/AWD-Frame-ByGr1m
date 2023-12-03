@@ -12,6 +12,8 @@ import requests
 
 ScanTime = ''
 alive_first = lambda x: printX('[!] Please scan alive/ping first') if type(x) == str else print()
+progress_bar = lambda i, t: f'{round(i * 100 / t)}% [ ' + '>' * (i // 5) + ' ' * ((t // 5) - (i // 5)) + ']'
+
 
 # About Game Info
 def scan_alive(ey_hosts, my_host: str, replace_str: str, port: int):
@@ -20,11 +22,11 @@ def scan_alive(ey_hosts, my_host: str, replace_str: str, port: int):
     if type(ey_hosts) == str:
         for i in range(1, 255):
             url = f"http://{ey_hosts.replace(replace_str, str(i))}:{port}/"
-            print(f'\r\x1b[01;30;34m[+]\t\t\t {round(i * 100 / 255)}% [', '>' * round(i * 100 / 255), end='')
+            print(f'\r\x1b[01;30;34m[+]\t\t\t {progress_bar(i, 255)}', ' ' * 10, sep='', end='')
             try:
                 res = requests.get(url, timeout=(0.01, 1))
                 print(f'\r\x1b[01;30;34m[+] "{url}", # {res.status_code}', ' ' * 100)
-                results.append(f'{url[7:-1]}')
+                results.append(f'{ey_hosts.replace(replace_str, str(i))}')
             except KeyboardInterrupt:
                 printX("[-] Quit Scan Alive")
                 return dict.fromkeys(results, 'Alive')

@@ -20,9 +20,9 @@ API_method = 'GET'
 SubmitAPI = [API_URL, API_token, API_flag, API_method]
 
 # About Game Time Info
-GSTime = "2024-01-10 20:30:00"  # Game Start Time
-RTime = 300  # Round Time
-RCount = 15  # Round Count
+GSTime = "2023-12-03 19:00:00"  # Game Start Time
+RTime = 600  # Round Time
+RCount = 20  # Round Count
 DFTime = 1800  # Defensive time
 
 # About MY Server Info

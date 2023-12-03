@@ -16,7 +16,7 @@ def game_start_remind(GSTimestamp, DFTime):
         try:
             now = int(time.time())
             if now > ATTimestamp + 200:
-                print(f"\r")
+                print(f"\r", end='')
                 return True
             if now > ATTimestamp:
                 print(f"\r加固时间到，请开始比赛!!")
@@ -44,23 +44,21 @@ def round_count_remind(GSTimestamp, DFTime, RTime, RCount):
             nowRound = (now - ATTimestamp) // RTime + 1
             mods = (ATTimestamp - now) % RTime
             count = RCount - nowRound
+            print(f"\rNow:第{nowRound}/{RCount}回合,还有{mods}秒", end='')
             time.sleep(1)
         except KeyboardInterrupt:
             print('\n Quit Time Remind')
             break
-        else:
-            print(f"\rNow:第{nowRound}/{RCount}回合,还有{mods}秒", end='')
     else:
         print("\rThe Competition has Ended !")
 
-
 # todo : time remind enable
-if __name__ == '__main__':
-    import os
-
-    os.path.join('../../')
-    from AWD_Frame_ByGr1m.Configs.edit_config import *
-
-    GSTimestamp = int(time.mktime(time.strptime(GSTime, "%Y-%m-%d %H:%M:%S")))
-    if game_start_remind(GSTimestamp, DFTime):
-        round_count_remind(GSTimestamp, DFTime, RTime, RCount)
+# if __name__ == '__main__':
+#     import os
+#
+#     os.path.join('../../')
+#     from AWD_Frame_ByGr1m.Configs.edit_config import *
+#
+#     GSTimestamp = int(time.mktime(time.strptime(GSTime, "%Y-%m-%d %H:%M:%S")))
+#     if game_start_remind(GSTimestamp, DFTime):
+#         round_count_remind(GSTimestamp, DFTime, RTime, RCount)
