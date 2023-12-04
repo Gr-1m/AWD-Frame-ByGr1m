@@ -13,16 +13,16 @@ DEBUG = False
 TITLE = "AWD-Frame-ByGr%1m"
 AUTHOR = "Gr%1m"
 AUTHOR_EMAIL = "1299091518@qq.com"
-AUTHOR_BLOG = "https://blog.enxm.top/"  # 自签名证书
+AUTHOR_BLOG = "https://blog.enxm.top/"  # 自签名证书 可放心无视风险
 
-VERSION = "V1.0.2"
-UPDATE_DATE = "2023-12-04"
+VERSION = "V1.0.3"
+UPDATE_DATE = "2023-12-05"
 
 # 提示符
 PROMPT = '\x1b[01;49;46mAWD-FOR-Gr%1m\x1b[0m-> '
 # 欢迎信息 长信息
 WELCOME = f"""
-                ########## AWD-Farmwork-V1.0.1 #################
+                ########## AWD-Farmwork-V1.0.3 #################
                                                         Powered By {AUTHOR} 
                                                         Date:{UPDATE_DATE}   
                                                     
@@ -79,7 +79,7 @@ SQL_HELP = """
             | 5: flush privileges;                                              | 刷新权限
             |------------------|------------------------------------------------|-------------------|
 """
-NOT_SHOW = ['Cmd', 'AwdConsole']
+NOT_SHOW = ['Cmd', 'AwdConsole', 'AliveFirst', 'ProgressBar']
 INIT_CHECK = ['']
 SHOW_CONFIG = ['all', 'gi', 'gti', 'msi', 'fi', 'alive']
 GLOBAL_CONFIG = ['TeamReplaceStr', 'MyHost', 'EyHosts', 'Token', 'APIMethod', 'SubmitAPI', 'GSTime', 'RTime', 'RCount',

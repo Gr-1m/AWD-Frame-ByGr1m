@@ -3,9 +3,14 @@
 ### 框架安装
 
 ```bash
+git clone https://github.com/Gr-1m/AWD-Frame-ByGr1m.git
+cd AWD-Frame-ByGr1m
+
 pip install -i https://pypi.tuna.tsinghua.edu.cn/simple -r requirment.txt
 or
-python -m pip install -i https://pypi.tuna.tsinghua.edu.cn/simple -r requirment.txt
+python3 -m pip install -i https://pypi.tuna.tsinghua.edu.cn/simple -r requirment.txt
+
+python3 StartMain.py [Mode]
 ```
 
 
@@ -20,7 +25,19 @@ show: 展示全局变量，提供配置，也可以根据需求查看变量
 set：设置全局变量，
 unset：取消设置全局变量的值
 
+ATTACK:
+    getflag: 执行获取flag (dev: 反弹flag功能正测试阶段)
+    submit:  提交flag 选项 auto自动提交，无选项则手动提交
+    shellin: 目录感染不死马注入
 
+DEFENSE:
+    getbackup:  通过ssh连接打包网站源码
+    checkme:    检查自己的host是否状态Alive
+
+辅助模块：
+    scan:       扫描主机存货情况
+    timedown:   用于查看提示比赛进程时间
+    clear:      请屏，与shell中功能相同
 ```
 
 
@@ -60,9 +77,6 @@ MyHostSQL = f'mysql://cms:qwerty;@{MyHost}:3306/xx'
 # [0] protocol [1] //username [2]password@MyhostIP [3]port/xx
 
 
-# About MyPage Alive Remind
-AliveStr = 'flag{bbcce4088-e7525797-BY_Gr%1m-c716e82}'
-AliveTime = 10
 
 ```
 
@@ -96,7 +110,9 @@ BDpass = 'x2aom1ng_20231114'
 ### 防御模块（module/Defense.py）
 
 ```
-
+# About MyPage Alive Remind
+AliveStr = 'flag{bbcce4088-e7525797-BY_Gr%1m-c716e82}'
+AliveTime = 10
 ```
 
 
@@ -105,7 +121,9 @@ BDpass = 'x2aom1ng_20231114'
 
 #### 开发环境：
 
-> OS：Linux  6.5.0-kali2-amd64 
-> #1 SMP PREEMPT_DYNAMIC Debian 6.5.3-1kali2 (2023-10-03) x86_64 GNU/Linux
+> OS：Linux  6.5.0-kali3-amd64 
+> #1 SMP PREEMPT_DYNAMIC Debian 6.5.6-1kali1 (2023-10-09) x86_64 GNU/Linux
 >
 > Python 3.11
+> 
+> Pycharm2023.1.3

@@ -2,11 +2,10 @@
 # -*- coding: UTF-8 -*-
 """
 @project    : customGr1m
-@file       : debug_config.py
+@file       : config.py
 @Author     : Gr%1m
-@Date       : 10/11/2023 10:03 pm
+@Date       : 4/12/2023 10:59 am
 """
-
 # About Game Info
 TeamReplaceStr = 'XXXTrs'
 MyHost = "192.168.122.1"
@@ -27,13 +26,17 @@ RCount = 20  # Round Count
 DFTime = 1800  # Defensive time
 
 # About MY Server Info
-MyHostSSH = f'ssh://msfadmin:msfadmin@{MyHost}:22/var/www/html'
-MyHostSQL = f'mysql://cms:qwerty@{MyHost}:3306/cms'
+MyHostSSH = f'ssh://msfadmin:msfadmin@{MyHost}:22/var/www/dvwa'
+MyHostSQL = f'mysql://root:@{MyHost}:3306/cms'
 
-# MyHost.split(':')
-# [0] protocol [1] //username [2]password@MyhostIP [3]port/xx
+# Server Vulnerable Info
+Vulner = {
+    # Attack type: f'scheme://language@host:port/path'
+    'Web1': f'http://php@xxx:80/app/index.php',
+    'Web2': f'http://python@xxx:8000/var/www/html/index',
+    'Pwn0': f'pwn://c++@xxx:4444/home/ctf/pwn',
+}
 
-
-# About MyPage Alive Remind
-AliveStr = 'flag{bbcce4088-e7525797-BY_Gr%1m-c716e82}'
-AliveTime = 10
+# About Flag
+FlagPath = '/flag'
+FlagRegular = r'flag{\w{32}}'

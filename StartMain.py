@@ -7,8 +7,9 @@
 @Date       : 10/11/2023 4:33 pm
 """
 from cmd import Cmd
-from Configs.frame_config import *
 from func.CmdColors import printX
+from Configs.frame_config import *
+from Configs.config import *
 from modules.Auxiliary import *
 from modules.Scan import *
 from modules.Attack import *
@@ -21,16 +22,14 @@ try:
 except IndexError:
     Mode = 'X'
 
-if DEBUG:
+if DEBUG or Mode == 'DEBUG':
     Mode = 'DEBUG'
-    from Configs.debug_config import *
 # elif os.path.isfile(''):  todo : `read cache`
 elif Mode == 'BUGKU':
-    from Configs.bugku_config import *
-elif Mode == 'NORMAL':
-    from Configs.edit_config import *
-elif Mode == 'DEBUG':
-    from Configs.debug_config import *
+    MyHost = MyHost if 'pvp' in MyHost else "192-168-1-229.pvp3589.bugku.cn"
+    EyHosts = f"192-168-1-{TeamReplaceStr}.pvp{MyHost.split('pvp')[-1].split('.')[0]}.bugku.cn"
+    SubmitAPI = [f"https://ctf.bugku.com/pvp/submit.html", 'token', 'flag', 'GET']
+    FlagRegular = r'flag{\w{32}}'
 else:
     printX('[-] No This Mode (Normal|Debug|Bugku)\n')
     printX('[!] python StartMain.py [Mode]')
@@ -50,14 +49,6 @@ class AwdConsole(Cmd):
     def preloop(self):
         print(f'\x1b[93m{self.Welcome} \x1b[0m')
         print(f'\x1b[92m{self.commandHelp} \x1b[0m')
-
-    # def precmd(self, line):
-    #     """Hook method executed just before the command line is
-    #     interpreted, but after the input prompt is generated and issued.
-    #
-    #     """
-    #     todo: time flush
-        # return line
 
     def emptyline(self) -> bool:
         # 解决空输入 自动上一条指令的问题
@@ -203,6 +194,10 @@ class AwdConsole(Cmd):
             round_count_remind(GSTimestamp, DFTime, RTime, RCount)
             return 0
 
+    def do_timeoff(self, argv=None):
+        pass
+        # self.prompt = time.asctime().split()[3] + PROMPT
+
     def do_scan(self, argv=''):
         if len(argv) < 1:
             printX("[i] scan [alive | ssh | sql | vul]")
@@ -265,22 +260,13 @@ class AwdConsole(Cmd):
             print('\r', end='')
             printX("[!] Quit getflag")
         except Exception as e:
-            printX(f"[-] Error {e}")
+            printX(f"[-] {e.__class__.__name__} {e}")
         else:
             for flag in Flags:
                 print(flag)
 
     def do_shellin(self, argv=''):
         backdoor_in(EyHosts)
-
-    def do_check(self, argv=''):
-        args = argv.split()
-        if len(args) < 1:
-            return 0
-        if args[0].lower() == 'me':
-            self.do_checkme()
-            return 0
-        # todo:
 
     def do_checkme(self, argv=''):
         status = check_me(MyHost, AliveStr)
@@ -349,21 +335,19 @@ class AwdConsole(Cmd):
     def do_test(self, argv=''):
         pass
         # todo: 1 AddCheckAliveStr
-        # from importlib import reload
-        # reload(sys.modules['modules.Attack'])
-        # print(sys.modules['Configs.debug_config'])
-        # printX(f"[+] def ")
-        # del sys.modules['Configs.debug_config']
 
-        # for k in globals().keys():
-        #     if '__' not in k and k[0].isupper() and not k.isupper() and k not in NOT_SHOW:
-        #         print(f"'{k}',", end='')
+    def do_upgrade(self, argv=None):
+        # todo: dev git
+        # os.system('git pull')
+        pass
 
     def do_save(self, argv=None):
+        # todo: dev sqlite3
         pass
 
     def do_exit(self, argv=''):
         # todo : write in file
+        printX("[+] \n exit")
         self.do_save()
         exit(0)
 
@@ -378,9 +362,8 @@ if __name__ == '__main__':
             os.system('clear')
         console.cmdloop()
     except (KeyboardInterrupt, EOFError):
-        printX("[+] \n exit")
-        # printX("[+] Interrupt: use the 'exit' command to quit")
-        exit(0)
+        printX("[+] Interrupt: use the 'exit' command to quit")
+
     except Exception as e:
         printX(f"[-] {e.__class__.__name__} {e}")
         exit(1)

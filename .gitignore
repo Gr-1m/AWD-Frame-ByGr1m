@@ -1,5 +1,6 @@
 .git
 .DS_Store
+.gitgnore
 node_modules
 module_test
 **/__pycache__

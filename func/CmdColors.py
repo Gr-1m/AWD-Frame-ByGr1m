@@ -79,5 +79,9 @@ def printX(context=None, *args, **kwargs) -> None:
             print(f"{context}", *args, **kwargs)
         return None
 
+
+def progress_bar(i, t):
+    return f'{round(i * 100 / t)}% [ ' + '>' * (i // 5) + ' ' * ((t // 5) - (i // 5)) + ']'
+
 # todo: this is a file about Terminal beautification function
 #   The class bcolor can be & should be Optimized, and the function printX too.
