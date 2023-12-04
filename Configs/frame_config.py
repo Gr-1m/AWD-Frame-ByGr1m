@@ -15,8 +15,8 @@ AUTHOR = "Gr%1m"
 AUTHOR_EMAIL = "1299091518@qq.com"
 AUTHOR_BLOG = "https://blog.enxm.top/"  # 自签名证书
 
-VERSION = "V1.0.1"
-UPDATE_DATE = "2023-11-14"
+VERSION = "V1.0.2"
+UPDATE_DATE = "2023-12-04"
 
 # 提示符
 PROMPT = '\x1b[01;49;46mAWD-FOR-Gr%1m\x1b[0m-> '

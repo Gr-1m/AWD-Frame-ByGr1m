@@ -16,7 +16,7 @@ APIMethod = 'GET'
 SubmitAPI = [f"https://ctf.bugku.com/pvp/submit.html", 'token', 'flag', APIMethod]
 
 # About Game Time Info
-GSTime = "2023-12-03 19:00:00"  # Game Start Time
+GSTime = "2023-12-04 8:00:00"  # Game Start Time
 RTime = 600  # Round Time
 RCount = 20  # Round Count
 DFTime = 1800  # Defensive time

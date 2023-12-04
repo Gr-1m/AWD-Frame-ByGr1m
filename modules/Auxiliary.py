@@ -8,6 +8,8 @@
 """
 import time
 
+FLUSH_LINE = "\x1b[K"
+
 
 def game_start_remind(GSTimestamp, DFTime):
     remind_count = 0
@@ -19,12 +21,12 @@ def game_start_remind(GSTimestamp, DFTime):
                 print(f"\r", end='')
                 return True
             if now > ATTimestamp:
-                print(f"\r加固时间到，请开始比赛!!")
+                print(f"\r加固时间到，请开始比赛!!\x1b[K")
                 return True
             elif now > GSTimestamp:
-                print(f"\r比赛开始，加固时间还有{ATTimestamp - now}秒 !!", end='')
+                print(f"\r比赛开始，加固时间还有{ATTimestamp - now}秒 !!\x1b[K", end='')
             else:
-                print(f"\r\x1b[01;30;31m距比赛开始还剩{GSTimestamp - now}秒\x1b[0m", end='')
+                print(f"\r\x1b[01;30;31m距比赛开始还剩{GSTimestamp - now}秒\x1b[0m\x1b[K", end='')
             time.sleep(1)
         except KeyboardInterrupt:
             print('\n Quit Time Remind')
@@ -44,8 +46,8 @@ def round_count_remind(GSTimestamp, DFTime, RTime, RCount):
             nowRound = (now - ATTimestamp) // RTime + 1
             mods = (ATTimestamp - now) % RTime
             count = RCount - nowRound
-            print(f"\rNow:第{nowRound}/{RCount}回合,还有{mods}秒", end='')
-            time.sleep(1)
+            print(f"\rNow:第{nowRound}/{RCount}回合,还有{mods}秒\x1b[K", end='')
+            time.sleep(0.2)
         except KeyboardInterrupt:
             print('\n Quit Time Remind')
             break

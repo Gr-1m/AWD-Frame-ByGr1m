@@ -52,13 +52,16 @@ class AwdConsole(Cmd):
         print(f'\x1b[92m{self.commandHelp} \x1b[0m')
 
     # def precmd(self, line):
-    #     # print(line)
     #     """Hook method executed just before the command line is
     #     interpreted, but after the input prompt is generated and issued.
     #
     #     """
-    #     # todo: time flush
-    #     return line
+    #     todo: time flush
+        # return line
+
+    def emptyline(self) -> bool:
+        # 解决空输入 自动上一条指令的问题
+        pass
 
     def help_show(self):
         printX(f"[i] show [all | gi | gti | msi | fi | myalive | eyalive]")
@@ -344,7 +347,7 @@ class AwdConsole(Cmd):
 
     # todo : Test
     def do_test(self, argv=''):
-        backdoor_in(EyHosts)
+        pass
         # todo: 1 AddCheckAliveStr
         # from importlib import reload
         # reload(sys.modules['modules.Attack'])
