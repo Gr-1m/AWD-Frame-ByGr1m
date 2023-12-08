@@ -40,8 +40,7 @@ def printYellow(mess, show=True):
     return bcolor.WARNING + mess + bcolor.ENDC
 
 
-def printX(context=None, *args, **kwargs) -> None:
-    logtime = True
+def printX(context=None, *args, logtime=True, **kwargs) -> None:
     try:
         if context[0] == '[' and context[2] == ']':
             prompt = context[1].lower()
@@ -51,10 +50,10 @@ def printX(context=None, *args, **kwargs) -> None:
             elif prompt == '-':
                 context = '\x1b[01;30;31m[-]\x1b[0m ' + main_text
             elif prompt.lower() == 'i':
-                logtime = False
+                logtime = logtime or False
                 context = '\x1b[01;30;32m[i]\x1b[0m ' + main_text
             elif prompt.lower() == 'w' or prompt.lower() == '!':
-                logtime = False
+                logtime = logtime or False
                 context = '\x1b[01;30;33m[W]\x1b[0m ' + main_text
             elif prompt == '+':
                 context = '\x1b[01;30;34m[+]\x1b[0m ' + main_text
@@ -63,7 +62,7 @@ def printX(context=None, *args, **kwargs) -> None:
             elif prompt.upper() == 'F':
                 context = '\x1b[01;30;36m[F]\x1b[0m ' + main_text
             else:
-                logtime = False
+                logtime = logtime or False
                 context = '\x1b[01;30;37m[!]\x1b[0m ' + main_text
         elif context:
             context = '\x1b[01;30;38m[?]\x1b[0m ' + context.lstrip()
@@ -71,12 +70,12 @@ def printX(context=None, *args, **kwargs) -> None:
             pass
     except IndexError:
         context = '\x1b[01;30;37m[E]\x1b[0m ' + f"Log Input Error:{context.lstrip()}"
-
+    else:
+        pass
     finally:
         if logtime:
-            print(f"[\x1b[01;30;32m{time.asctime().split()[3]}\x1b[0m] {context}", *args, **kwargs)
-        else:
-            print(f"{context}", *args, **kwargs)
+            context = f"[\x1b[01;30;32m{time.asctime().split()[3]}\x1b[0m] " + context
+        print(f"{context}", *args, **kwargs)
         return None
 
 

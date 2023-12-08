@@ -16,6 +16,7 @@ import pymysql
 AliveCheck = 0
 AliveTime = 10
 AliveStr = 'flag{bbcce4088-e7525797-BY_Gr%1m-c716e82}'
+CheckTime = ['']
 
 
 # Reinforcement stage
@@ -39,12 +40,11 @@ def get_backup(myhostssh, webroot):
     backup_filename = 'www.tar'
 
     try:
-        client = connect_ssh(myhostssh)
+        client, myhostssh = connect_ssh(myhostssh)
         printX(f"[+] connect Host {myhostssh.hostname}")
 
         _, stdout, stderr = client.exec_command('pwd')
         pwd = stdout.read().decode().strip()
-        _, stdout, stderr = client.exec_command(f"echo '<!--{AliveStr}-->'; >> {webroot}/index.php")
         _, stdout, stderr = client.exec_command(f'tar -zcvf {backup_filename} {webroot}')
         printX(f"[+] tar WebRoot directory {webroot} success, sftp get {backup_filename}")
 
@@ -56,10 +56,29 @@ def get_backup(myhostssh, webroot):
     except FileNotFoundError as e:
         printX(f'[-] FileNotFoundError: {e}, {stderr.read().decode()}')
     else:
-        printX(f"[+] download finished -> ./data/{backup_filename}")
+        printX(f"[+] download finished -> [local]./data/{backup_filename}")
     finally:
         client.close()
         return 0
+
+
+def add_monitor(myhostssh, mainpage_path):
+    try:
+        client, myhostssh = connect_ssh(myhostssh)
+        printX(f"[+] connect Host {myhostssh.hostname}")
+        add_str = f'?><?php echo "<!--xxx{AliveStr}xxx-->";'
+        _, stdout, stderr = client.exec_command(f"echo '{add_str}' >> {mainpage_path}")
+    except paramiko.ssh_exception.NoValidConnectionsError as e:
+        printX(f'[-] SSH Error ->{e.__class__.__name__}: {e}')
+    except FileNotFoundError as e:
+        printX(f'[-] FileNotFoundError: {e}, {stderr.read().decode()}')
+    else:
+        printX(f"[+] Add AliveStr finished -> [remote]{mainpage_path}")
+        client.close()
+        return 0
+    finally:
+        client.close()
+        return 1
 
 
 def connect_ssh(myhostssh):
@@ -79,7 +98,7 @@ def connect_ssh(myhostssh):
     except paramiko.ssh_exception.NoValidConnectionsError as e:
         printX(f'[-] SSH Error: {e}')
     else:
-        return client
+        return client, myhostssh
 
 
 def connect_mysql(myhostsql):

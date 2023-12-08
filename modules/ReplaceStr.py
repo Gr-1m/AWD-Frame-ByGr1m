@@ -8,8 +8,8 @@
 """
 
 # Some Replace Str
-RceReplaceStr = 'XXXRCEstr'
-HostReplaceStr = 'XXXHostname'
+RceReplaceStr = 'CMD_RCE_REPLACE'
+HostReplaceStr = 'HOST_NAME_REPLACE'
 ErgodicDirReplace = "WEB_ROOT_REPLACE"
 BDNameReplace = "HM_NAME_REPLACE"
 BDDataReplace = "WAIT_FOR_REPLACE"
